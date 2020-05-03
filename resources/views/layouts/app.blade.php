@@ -28,15 +28,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
        <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
-    </ul>
-
-    <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-        Welcome back, {{ Auth::user()->username }}!</a>
+        <a class="nav-link">Web Login - Gateway Group</a>
       </li>
     </ul>
+
+    <!-- Right navbar links 
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>-->
   </nav>
   <!-- /.navbar -->
 

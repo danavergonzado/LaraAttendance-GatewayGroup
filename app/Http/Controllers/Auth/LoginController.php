@@ -44,12 +44,23 @@ class LoginController extends Controller
     protected function authenticated()
     {
         // stuff to do after user logs in
-        TimeLog::create([
-            'user_id'       => Auth::user()->id,
-            'session_id'    => Session::getId()
-        ]);
+        $dateToday = date('Y-m-d');
+
+        $log = TimeLog::where([
+            'user_id'   =>  Auth::user()->id,
+            'date'      =>  $dateToday                  
+        ])->get();
         
-        return view('home');
+        if(count($log) == 0){
+            TimeLog::create([
+                'user_id'       => Auth::user()->id,
+                'session_id'    => Session::getId(),
+                'company_id'    => Auth::user()->company_id, 
+                'date'          => $dateToday
+            ]);
+
+        }
+        //return redirect('/home');
     }
 
 }

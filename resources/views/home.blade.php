@@ -16,8 +16,12 @@
                 <h3 class="profile-username text-center">{{ Auth::user()->name }}</h3>
                 <p class="text-muted text-center">{{ Auth::user()->position }}</p>
                 <ul class="list-group list-group-unbordered mb-3"></ul>
-                <a href="#" class="btn btn-success btn-block" data-toggle="modal" data-target="#Modal_TimeInOut" id=""><b>Time In/Out</b></a>
-                <a href="#" class="btn btn-danger btn-block"><b>Logout</b></a>
+                <a href="#" class="btn btn-success btn-block"  data-toggle="modal" data-target="#Modal_TimeInOut" id=""><b>Time In/Out</b></a>
+                <a href="{{ route('logout') }}"
+          onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-danger btn-block"><b>Logout</b></a>
+          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+             @csrf
+          </form>
               </div>
               <!-- /.card-body -->
             </div>
@@ -30,7 +34,6 @@
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
                   <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">TimeLog</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#members" data-toggle="tab">Online Team</a></li>
                   <li class="nav-item"><a class="nav-link" href="#tasks" data-toggle="tab">Tasks</a></li>
                 </ul>
               </div><!-- /.card-header -->
@@ -65,45 +68,8 @@
                   </div>
                   <!-- /.tab-pane -->
 
-
-                  <div class="tab-pane p-0" id="members">
-                    <ul class="users-list clearfix">
-                      <li>
-                        <img src="dist/img/user1-128x128.jpg" alt="User Image" width="90px">
-                        <a class="users-list-name" href="#">Alexander Pierce</a>
-                        <span class="users-list-date">Today</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user8-128x128.jpg" alt="User Image" width="90px">
-                        <a class="users-list-name" href="#">Norman</a>
-                        <span class="users-list-date">Yesterday</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user1-128x128.jpg" alt="User Image" width="90px">
-                        <a class="users-list-name" href="#">Alexander Pierce</a>
-                        <span class="users-list-date">Today</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user8-128x128.jpg" alt="User Image" width="90px">
-                        <a class="users-list-name" href="#">Norman</a>
-                        <span class="users-list-date">Yesterday</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user1-128x128.jpg" alt="User Image" width="90px">
-                        <a class="users-list-name" href="#">Alexander Pierce</a>
-                        <span class="users-list-date">Today</span>
-                      </li>
-                      <li>
-                        <img src="dist/img/user8-128x128.jpg" alt="User Image" width="90px">
-                        <a class="users-list-name" href="#">Norman</a>
-                        <span class="users-list-date">Yesterday</span>
-                      </li>
-                    </ul>
-                  </div> <!-- / end of members tab -->
-                 
-
                   <div class="tab-pane" id="tasks">
-                 Task here
+                 
                   </div>
                   <!-- /.tab-pane -->
                 </div>
@@ -121,6 +87,8 @@
 
   <!-- MODAL
   =============================================== -->
+
+  @if(empty($timeout))
   <div class="modal" tabindex="-1" role="dialog" id="Modal_TimeInOut">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -145,25 +113,42 @@
     </div>
   </div>
 </div>
+@endif
 @endsection
 
 @section('page-js')
 <script>
   $('document').ready(function() {
 
+    $(document).keypress(
+      function(e){
+        if (e.which == '13') {
+          e.preventDefault();
+          $('#BtnVerifyLogin').click();
+        }
+    });
+
     /* METHODS HERE */
     function TimeIn(data)
     {
-      $.post("/log/timein", data,
-        function (data, textStatus, jqXHR) {
-          alert(jqXHR);
-        },
-        "json"
-      );
+      $.post("/log/timein", data)
+        .done( function(e) {
+          if(e == '1') {
+            alert('Success');
+            location.reload();
+          }else{
+            alert(e);
+          }
+          
+        })
+        .fail( function(xhr, textStatus, errorThrown) {
+         alert(xhr.responseText);
+        });
     }
 
     /* EVENTS HERE */
-    $('#BtnVerifyLogin').click(function () { 
+    $('#BtnVerifyLogin').click(function (e) { 
+      e.preventDefault();
       var data = $('#FrmTimeInOut').serialize();
       TimeIn(data);
     });
