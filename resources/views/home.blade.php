@@ -13,63 +13,49 @@
                        src="../../dist/img/avatar5.png"
                        alt="User profile picture">
                 </div>
-
                 <h3 class="profile-username text-center">{{ Auth::user()->name }}</h3>
-
                 <p class="text-muted text-center">{{ Auth::user()->position }}</p>
-
-                <ul class="list-group list-group-unbordered mb-3">
-                  <li class="list-group-item">
-                    <b>Running Tasks</b> <a class="float-right">{{ count($tasks) }}</a>
-                  </li>
-                </ul>
-
-                <a href="#" class="btn btn-primary btn-block"><b>Start Test</b></a>
-                <a href="#" class="btn btn-warning btn-block"><b>Goto Break</b></a>
+                <ul class="list-group list-group-unbordered mb-3"></ul>
+                <a href="#" class="btn btn-success btn-block" data-toggle="modal" data-target="#Modal_TimeInOut" id=""><b>Time In/Out</b></a>
+                <a href="#" class="btn btn-danger btn-block"><b>Logout</b></a>
               </div>
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
-
-           
             <!-- /.card -->
           </div>
           <!-- /.col -->
           <div class="col-md-9">
             <div class="card">
               <div class="card-header p-2">
-              <a href="#" class="btn btn-success btn-sm float-right mt-2" data-toggle="modal" data-target="#Modal-AddTask">Add Task</a>
                 <ul class="nav nav-pills">
-                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Task/Test</a></li>
+                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">TimeLog</a></li>
                   <li class="nav-item"><a class="nav-link" href="#members" data-toggle="tab">Online Team</a></li>
                   <li class="nav-item"><a class="nav-link" href="#tasks" data-toggle="tab">Tasks</a></li>
                 </ul>
               </div><!-- /.card-header -->
               <div class="card-body">
                 <div class="tab-content"  style="min-height:350px; max-height:350px; overflow:auto">
-
                   <div class="active tab-pane" id="activity">
                     <!-- Post -->
                     <div class="post">
                       <table class="table">
                         <thead>
-                          <th>Created At</th>
-                          <th>Category</th>
-                          <th>Task</th>
-                          <th>Started</th>
-                        <t/head>
+                          <th>Date</th>
+                          <th>WebLogin</th>
+                          <th>Time-In</th>
+                          <th>Time-Out</th>
+                        </thead>
                         <tbody>
-                          @forelse($tasks as $task)
+                          @forelse($timelogs as $log)
                           <tr>
-                              <td>{ $task->created_at->format('m/d/Y h:i:s A') }}</td>
-                              <td>{{ $task->category }}</td>
-                              <td>{{ $task->name}}</td>
-                                <img class="img- circle img-bordered-sm" src="../../dist/img/AdminLTELogo.png" alt="user image">
-                                <span class="description">{ - {{ Auth::user()->username }} on </span>
-                                <p style="margin-left:50px"></p>
+                            <td>{{ $log->created_at->format('m/d/Y') }}</td>
+                            <td>{{ $log->created_at->format('h:i:s A') }}</td>
+                            <td>{{ $timein = ($log->timein) ? $log->timein->format('h:i:s A') : "" }}</td>
+                            <td>{{ $timeout = ($log->timeout) ? $log->timeout->format('h:i:s A') : "" }}</td>
                           </tr>
                           @empty
-                            <p>No Activity</p>
+                          <p class="alert alert-danger">No record.</p>
                           @endforelse
                         </tbody>
                       </table>
@@ -135,25 +121,25 @@
 
   <!-- MODAL
   =============================================== -->
-  <div class="modal" tabindex="-1" role="dialog" id="Modal-AddTask">
+  <div class="modal" tabindex="-1" role="dialog" id="Modal_TimeInOut">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add Task (Test item)</h5>
+        <h5 class="modal-title">Prompt: Verify</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-      <form method="post" id="FrmAddTask">
+      <form method="post" id="FrmTimeInOut">
         <div class="form-group">
-            <input class="form-control" type="text" id="task-name" name="name" placeholder="task name here">
+          <input type="text" name="comp_num" class="form-control" placeholder="enter your company id number" /> 
             @csrf
         </div>
       </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="BtnAddTask">Save Item</button>
+        <button type="button" class="btn btn-success" id="BtnVerifyLogin">Verify</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -166,9 +152,9 @@
   $('document').ready(function() {
 
     /* METHODS HERE */
-    function AddTask(data)
+    function TimeIn(data)
     {
-      $.post("/task/addtask", data,
+      $.post("/log/timein", data,
         function (data, textStatus, jqXHR) {
           alert(jqXHR);
         },
@@ -177,9 +163,9 @@
     }
 
     /* EVENTS HERE */
-    $('#BtnAddTask').click(function () { 
-      var data = $('#FrmAddTask').serialize();
-      AddTask(data);
+    $('#BtnVerifyLogin').click(function () { 
+      var data = $('#FrmTimeInOut').serialize();
+      TimeIn(data);
     });
 
   });

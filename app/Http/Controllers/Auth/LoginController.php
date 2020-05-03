@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\TimeLog;
+use Auth;
+use Session;
 
 class LoginController extends Controller
 {
@@ -37,4 +40,16 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+    
+    protected function authenticated()
+    {
+        // stuff to do after user logs in
+        TimeLog::create([
+            'user_id'       => Auth::user()->id,
+            'session_id'    => Session::getId()
+        ]);
+        
+        return view('home');
+    }
+
 }

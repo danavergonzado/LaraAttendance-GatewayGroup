@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -37,9 +38,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function task()
+    public function timelog()
     {
-        return $this->hasMany('App\Task');
+        return $this->hasMany('App\TimeLog');
     }
 
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Task;
+use App\TimeLog;
 use App\User;
 use Auth;
 
@@ -25,8 +25,8 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
-    {
-        $tasks = Task::all();     
-        return view('home')->with('tasks',$tasks);
+    {  
+        $timelogs = TimeLog::where('user_id', Auth::user()->id)->get();
+        return view('home')->with('timelogs', $timelogs);
     }
 }
