@@ -10,7 +10,7 @@
               <div class="card-body box-profile">
                 <div class="text-center">
                   <img class="profile-user-img img-fluid img-circle"
-                       src="../../dist/img/avatar5.png"
+                       src="{{ asset('dist/img/avatar.png') }}"
                        alt="User profile picture">
                 </div>
                 <h3 class="profile-username text-center">{{ Auth::user()->name }}</h3>
