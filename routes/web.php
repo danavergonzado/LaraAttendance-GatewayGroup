@@ -23,3 +23,4 @@ Route::get('/user/register', 'UserController@index');
 Route::post('/user/register', 'UserController@register');
 Route::get('/home', 'HomeController@index');
 Route::post('/log/timein', 'TimeLogController@timein');
+Route::get('/hr', 'HomeController@hr');

@@ -29,4 +29,9 @@ class HomeController extends Controller
         $timelogs = TimeLog::where('user_id', Auth::user()->id)->get();
         return view('home')->with('timelogs', $timelogs);
     }
+
+    public function hr()
+    {
+        return view('page.hr');
+    }
 }
