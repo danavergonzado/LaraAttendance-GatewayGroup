@@ -134,7 +134,7 @@
       $.post("/log/timein", data)
         .done( function(e) {
           if(e == '1') {
-            alert('Success');
+            alert('Success: ID Number verified');
             location.reload();
           }else{
             alert(e);

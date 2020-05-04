@@ -19,5 +19,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/user/register', 'UserController@index');
+Route::post('/user/register', 'UserController@register');
+Route::get('/home', 'HomeController@index');
 Route::post('/log/timein', 'TimeLogController@timein');

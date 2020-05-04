@@ -5,14 +5,14 @@
     <div class="row justify-content-center">
         <div class="col-md-8" style="margin-top:20px">
             <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
+                <div class="card-header">Employee Registration</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ url('/user/register') }}">
                         @csrf
 
                         <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Employee Name:</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Name:</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
@@ -26,7 +26,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Employee ID Number:</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">ID Number:</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="company_id" value="{{ old('name') }}" required autocomplete="name" autofocus>
@@ -40,7 +40,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Job Designation:</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Job Title:</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="position" value="{{ old('name') }}" required autocomplete="name" autofocus>
@@ -54,7 +54,28 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Branch Group:</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Company:</label>
+
+                            <div class="col-md-6">
+                               <select class="form-control" name="branch_id">
+                                    <option value="1">GMCI</option>
+                                    <option value="2">Mantrade Development Corp.</option>
+                                    <option value="3">Autowelt</option>
+                                    <option value="4">Puerto Gateway</option>
+                                    <option value="5">MG Gateway South</option>
+                                    <option value="6">MG Gateway Mantrade</option>
+                               </select>
+
+                                @error('name')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="name" class="col-md-4 col-form-label text-md-right" style="font-weight:normal">Branch:</label>
 
                             <div class="col-md-6">
                                <select class="form-control" name="branch_id">
@@ -122,6 +143,10 @@
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Register') }}
+                                </button>
+
+                                <button type="submit" class="btn btn-secondary">
+                                    Clear Form
                                 </button>
                             </div>
                         </div>

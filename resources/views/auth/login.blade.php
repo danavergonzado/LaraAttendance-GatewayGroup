@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card" style="margin-top: 10%">
-                <div class="card-header">Login to start your session</div>
+                <div class="card-header">Login</div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
