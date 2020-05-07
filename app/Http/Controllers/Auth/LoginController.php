@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\TimeLog;
+use App\User;
 use Auth;
 use Session;
+use DB;
 
 class LoginController extends Controller
 {
@@ -41,26 +43,38 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
     
+    // stuff to do after user logs in
     protected function authenticated()
     {
-        // stuff to do after user logs in
         $dateToday = date('Y-m-d');
 
-        $log = TimeLog::where([
-            'user_id'   =>  Auth::user()->id,
-            'date'      =>  $dateToday                  
-        ])->get();
-        
-        if(count($log) == 0){
-            TimeLog::create([
-                'user_id'       => Auth::user()->id,
-                'session_id'    => Session::getId(),
-                'company_id'    => Auth::user()->company_id, 
-                'date'          => $dateToday
-            ]);
+        DB::beginTransaction();
 
+        try{
+
+            // check if user has already logged in
+            // if Auth::user()->is_logged_in
+            $log = TimeLog::where(['user_id'=> Auth::user()->id,'date' =>  $dateToday])->get();
+
+            // If no log recorded
+            if(count($log) == 0){
+                $log = TimeLog::create([
+                    'user_id'       => Auth::user()->id,
+                    'session_id'    => Session::getId(),
+                    'employee_id'   => Auth::user()->employee_id, 
+                    'date'          => $dateToday
+                ]);
+            }
+
+            if($log){
+                DB::commit();
+                return redirect()->back();
+            }
         }
-        //return redirect('/home');
+        catch(Exception $ex){
+            DB::rollback();
+            return redirect('/login');
+        }
     }
 
 }

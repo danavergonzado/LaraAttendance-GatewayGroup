@@ -21,20 +21,15 @@ class TimeLogController extends Controller
                  'date'      =>  date('Y-m-d')
                  ])->get();
         
-             if($request->comp_num == $log[0]->company_id)
+             if($request->comp_num == $log[0]->employee_id)
              {      
-                 if($log[0]->timein == null)
-                 {
-                     $log[0]->timein = date('Y-m-d H:i:s');
-                 } 
-                 else 
-                 {
-                     $log[0]->timeout = date('Y-m-d H:i:s');
-                 }
+                $date = date('Y-m-d H:i:s');
+                $att = (!$log[0]->timein) ? $log[0]->timein =  $date : $log[0]->timeout =  $date;
+                
+                return $log[0]->save();
         
-                 return $log[0]->save();
-        
-             }else
+             }
+             else
              {
                  return 'Company ID do not match with current user.';
              }

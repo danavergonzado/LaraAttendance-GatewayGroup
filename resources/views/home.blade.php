@@ -15,13 +15,14 @@
                 </div>
                 <h3 class="profile-username text-center">{{ Auth::user()->name }}</h3>
                 <p class="text-muted text-center">{{ Auth::user()->position }}</p>
-                <ul class="list-group list-group-unbordered mb-3"></ul>
-                <a href="#" class="btn btn-success btn-block"  data-toggle="modal" data-target="#Modal_TimeInOut" id=""><b>Time In/Out</b></a>
-                <a href="{{ route('logout') }}"
-          onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-danger btn-block"><b>Logout</b></a>
-          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-             @csrf
-          </form>
+                <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">Last Logged In <span class="float-right">{{ Auth::user()->updated_at->format('m/d/Y h:i A') }}</span></li>
+                </ul>
+                <a href="#" class="btn btn-success btn-block"  
+                  data-toggle="modal" data-target="#Modal_TimeInOut" id="">
+                  <i class="fa fa-user-clock"></i> <b>Time  In/Out</b>
+                </a>
+              
               </div>
               <!-- /.card-body -->
             </div>
@@ -45,7 +46,6 @@
                       <table class="table">
                         <thead>
                           <th>Date</th>
-                          <th>WebLogin</th>
                           <th>Time-In</th>
                           <th>Time-Out</th>
                         </thead>
@@ -53,7 +53,6 @@
                           @forelse($timelogs as $log)
                           <tr>
                             <td>{{ $log->created_at->format('m/d/Y') }}</td>
-                            <td>{{ $log->created_at->format('h:i:s A') }}</td>
                             <td>{{ $timein = ($log->timein) ? $log->timein->format('h:i:s A') : "" }}</td>
                             <td>{{ $timeout = ($log->timeout) ? $log->timeout->format('h:i:s A') : "" }}</td>
                           </tr>
@@ -98,7 +97,12 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body"> 
+
+      @if($timein)
+        <p class="alert alert-danger">Note: After verification, you will be log out and will no longer access this page for today.</p>
+      @endif
+
       <form method="post" id="FrmTimeInOut">
         <div class="form-group">
           <input type="text" name="comp_num" class="form-control" placeholder="enter your company id number" /> 
