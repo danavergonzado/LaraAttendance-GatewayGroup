@@ -42,31 +42,40 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    protected function sessionid(){
+        return Session::getID();
+    }
+
+    protected function userid(){
+        return Auth::user()->id;
+    }
+
+    protected function employeeid(){
+        return Auth::user()->employee_id;
+    }
     
     // stuff to do after user logs in
     protected function authenticated()
     {
-        $dateToday = date('Y-m-d');
-
         DB::beginTransaction();
-
         try{
-
-            // check if user has already logged in
-            // if Auth::user()->is_logged_in
-            $log = TimeLog::where(['user_id'=> Auth::user()->id,'date' =>  $dateToday])->get();
-
-            // If no log recorded
+            // 1. Save User last_logged_in
+        $last_logged_in = User::where('id', $this->userid())->update(['last_logged_in'=>date('Y-m-d H:i:s')]);
+          
+            // 2. Save user log
+            $dateToday = date('Y-m-d'); 
+            $log = TimeLog::where(['user_id'=> $this->userid(),'date' =>  $dateToday])->get();
             if(count($log) == 0){
                 $log = TimeLog::create([
-                    'user_id'       => Auth::user()->id,
-                    'session_id'    => Session::getId(),
-                    'employee_id'   => Auth::user()->employee_id, 
+                    'user_id'       => $this->userid(),
+                    'session_id'    => $this->sessionid(),
+                    'employee_id'   => $this->employeeid(), 
                     'date'          => $dateToday
                 ]);
             }
 
-            if($log){
+            if($log && $last_logged_in){
                 DB::commit();
                 return redirect()->back();
             }

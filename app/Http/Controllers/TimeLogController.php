@@ -9,7 +9,6 @@ use Session;
 
 class TimeLogController extends Controller
 {
-    
     public function timein(Request $request)
     {
         $session_id = Session::getID();
@@ -25,13 +24,13 @@ class TimeLogController extends Controller
              {      
                 $date = date('Y-m-d H:i:s');
                 $att = (!$log[0]->timein) ? $log[0]->timein =  $date : $log[0]->timeout =  $date;
-                
+
                 return $log[0]->save();
         
              }
              else
              {
-                 return 'Company ID do not match with current user.';
+                 return 'Invalid Company ID.';
              }
         }
     }

@@ -16,11 +16,13 @@
                 <h3 class="profile-username text-center">{{ Auth::user()->name }}</h3>
                 <p class="text-muted text-center">{{ Auth::user()->position }}</p>
                 <ul class="list-group list-group-unbordered mb-3">
-                  <li class="list-group-item">Last Logged In <span class="float-right">{{ Auth::user()->updated_at->format('m/d/Y h:i A') }}</span></li>
+                  <li class="list-group-item">Last Logged In: <span class="float-right">{{ Auth::user()->updated_at->format('m/d/Y h:i A') }}</span></li>
+                  <li class="list-group-item">Time-In: <span class="float-right"> {{ $data['timein'] }}</span></li>
+                  <li class="list-group-item">Time-Out: <span class="float-right">{{ $data['timeout'] }}</span></li>
                 </ul>
-                <a href="#" class="btn btn-success btn-block"  
+                <a href="#" class="btn {{ ($data['timein'] == null) ? 'btn-success' : 'btn-danger'}} btn-block"  
                   data-toggle="modal" data-target="#Modal_TimeInOut" id="">
-                  <i class="fa fa-user-clock"></i> <b>Time  In/Out</b>
+                  <i class="fa fa-user-clock"></i> <b>{{ ($data['timein'] == null) ? 'Time-In' : 'Time-Out'}}</b>
                 </a>
               
               </div>
@@ -33,42 +35,25 @@
           <div class="col-md-9">
             <div class="card">
               <div class="card-header p-2">
-                <ul class="nav nav-pills">
-                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">TimeLog</a></li>
-                  <li class="nav-item"><a class="nav-link" href="#tasks" data-toggle="tab">Tasks</a></li>
-                </ul>
+                <h5 class="pt-1">Running Task <a href="#" data-toggle="modal" data-target="#Modal_AddTask" class="btn btn-primary btn-sm float-right" role="button"><i class="fa fa-plus"></i> Add Task</a></h5>
               </div><!-- /.card-header -->
               <div class="card-body">
-                <div class="tab-content"  style="min-height:350px; max-height:350px; overflow:auto">
+                <div class="tab-content"  style="max-height:350px; overflow:auto">
                   <div class="active tab-pane" id="activity">
                     <!-- Post -->
                     <div class="post">
                       <table class="table">
                         <thead>
                           <th>Date</th>
-                          <th>Time-In</th>
-                          <th>Time-Out</th>
+                          <th>Task</th>
                         </thead>
                         <tbody>
-                          @forelse($timelogs as $log)
-                          <tr>
-                            <td>{{ $log->created_at->format('m/d/Y') }}</td>
-                            <td>{{ $timein = ($log->timein) ? $log->timein->format('h:i:s A') : "" }}</td>
-                            <td>{{ $timeout = ($log->timeout) ? $log->timeout->format('h:i:s A') : "" }}</td>
-                          </tr>
-                          @empty
-                          <p class="alert alert-danger">No record.</p>
-                          @endforelse
+                         
                         </tbody>
                       </table>
                     </div>
                     
                     <!-- /.post -->
-                  </div>
-                  <!-- /.tab-pane -->
-
-                  <div class="tab-pane" id="tasks">
-                 
                   </div>
                   <!-- /.tab-pane -->
                 </div>
@@ -87,22 +72,17 @@
   <!-- MODAL
   =============================================== -->
 
-  @if(empty($timeout))
+  @if($data['timeout'] == null)
   <div class="modal" tabindex="-1" role="dialog" id="Modal_TimeInOut">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Prompt: Verify</h5>
+        <h5 class="modal-title">{{ (!empty($data['timein']) ? 'Time-Out' : 'Time-In') }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body"> 
-
-      @if($timein)
-        <p class="alert alert-danger">Note: After verification, you will be log out and will no longer access this page for today.</p>
-      @endif
-
       <form method="post" id="FrmTimeInOut">
         <div class="form-group">
           <input type="text" name="comp_num" class="form-control" placeholder="enter your company id number" /> 
@@ -118,6 +98,33 @@
   </div>
 </div>
 @endif
+
+<!-- Add Task Modal
+  =================================== -->
+<div class="modal" tabindex="-1" role="dialog" id="Modal_AddTask">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Task</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body"> 
+      <form method="post" id="FrmAddTask">
+        <div class="form-group">
+          <input type="text" name="task" class="form-control" placeholder="Enter the task name here" /> 
+            @csrf
+        </div>
+      </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="BtnSaveTask"><i class="fa fa-save"></i > Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i > Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('page-js')
@@ -133,29 +140,32 @@
     });
 
     /* METHODS HERE */
-    function TimeIn(data)
-    {
-      $.post("/log/timein", data)
-        .done( function(e) {
-          if(e == '1') {
-            alert('Success: ID Number verified');
-            location.reload();
-          }else{
-            alert(e);
-          }
-          
+    function post(url, data, success){
+      $.post(url, data)
+        .done(function(e){
+          alert(success);
+          location.reload();
         })
-        .fail( function(xhr, textStatus, errorThrown) {
-         alert(xhr.responseText);
-        });
+        .fail(function(xhr, textStatus, errorThrown){
+          alert(xhr.responseText);
+      });
     }
 
     /* EVENTS HERE */
     $('#BtnVerifyLogin').click(function (e) { 
       e.preventDefault();
       var data = $('#FrmTimeInOut').serialize();
-      TimeIn(data);
+      post('log/timein', data, "Success: ID Verified");
     });
+
+    $('#BtnSaveTask').click(function(e){
+      e.preventDefault();
+      var data = $('#FrmAddTask').serialize();
+      post('task/add',data, "Success: New Task Added");
+    });
+
+
+
 
   });
 </script>

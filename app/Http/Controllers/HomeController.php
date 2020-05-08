@@ -26,8 +26,20 @@ class HomeController extends Controller
      */
     public function index()
     {  
-        $timelogs = TimeLog::where('user_id', Auth::user()->id)->get();
-        return view('home')->with('timelogs', $timelogs);
+        $log = TimeLog::where([
+            'user_id'   =>  Auth::user()->id,
+            'date'  =>  date('Y-m-d')
+            ])->get();
+        
+        $timein = ($log[0]->timein) ? $log[0]->timein->format('h:i A') : null;             
+        $timeout = ($log[0]->timeout) ? $log[0]->timeout->format('h:i A') : null;
+        
+        $data = [
+            'timein' => $timein,
+            'timeout' => $timeout,
+        ];
+
+        return view('home')->with('data', $data);
     }
 
     public function hr()
