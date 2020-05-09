@@ -18,9 +18,12 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::get('/home', 'HomeController@index');
+
+Route::post('/task/add', "TaskController@create");
 
 Route::get('/user/register', 'UserController@index');
 Route::post('/user/register', 'UserController@register');
-Route::get('/home', 'HomeController@index');
+
 Route::post('/log/timein', 'TimeLogController@timein');
 Route::get('/hr', 'HomeController@hr');
