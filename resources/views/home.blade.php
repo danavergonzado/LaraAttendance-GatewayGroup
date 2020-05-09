@@ -35,7 +35,7 @@
           <div class="col-md-9">
             <div class="card">
               <div class="card-header p-2">
-                <h5 class="pt-1">Running Task <a href="#" data-toggle="modal" data-target="#Modal_AddTask" class="btn btn-primary btn-sm float-right" role="button"><i class="fa fa-plus"></i> Add Task</a></h5>
+                <h5 class="pt-1">Running Task <a href="#" class="btn btn-primary btn-sm float-right" id="BtnShowModalAddTask"role="button"><i class="fa fa-plus"></i> Add Task</a></h5>
               </div><!-- /.card-header -->
               <div class="card-body">
                 <div class="tab-content"  style="max-height:350px; overflow:auto">
@@ -53,7 +53,7 @@
                           <tr id="{{ $item->id }}">
                               <td>{{ $item->created_at->format('m/d/Y') }}</td>
                               <td id="task-name">{{ $item->name }}</td>
-                              <td><a href="#" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i></a></td>
+                              <td><button class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i></button></td>
                           </tr>
                         @empty
                         <tr><td colspan="3">No running task found.</td></tr>
@@ -131,7 +131,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" id="BtnSaveTask"><i class="fa fa-save"></i > Save</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i > Close</button>
+        <button type="button" class="btn btn-secondary" id="BtnDismissModalAddTask"><i class="fa fa-times"></i > Close</button>
       </div>
     </div>
   </div>
@@ -149,32 +149,57 @@
         }
     });
 
-    /* METHODS HERE */
-    function post(url, data, success){
-      $.post(url, data)
-        .done(function(e){
-          alert(success);
-          location.reload();
-        })
-        .fail(function(xhr, textStatus, errorThrown){
-          alert(xhr.responseText);
-      });
-    }
-
     /* EVENTS HERE */
     $('#BtnVerifyLogin').on('click', function (e) { 
       e.preventDefault();
       var data = $('#FrmTimeInOut').serialize();
-      post('log/timein', data, "Success: ID Verified");
+      $.post('log/timein', data)
+        .done(function(e){
+          if(e==1){
+            alert('Success: Verified');
+            location.reload();
+          }
+          else{
+            alert(e);
+          }
+        })
+        .fail(function(xhr, textStatus, errorThrown){
+          alert(xhr.responseText);
+      });
+    });
+
+    $('#BtnShowModalAddTask').click(function() {
+        $('#Modal_AddTask').modal('show');
+    });
+
+    $('#BtnDismissModalAddTask').click(function() {
+        $('#current_row').val('');
+        $('#action').val('');
+        $('#txtTask').val('');
+        $('#Modal_AddTask').modal('hide');
     });
 
     $('#BtnSaveTask').on('click', function(e){
       e.preventDefault();
       var data = $('#FrmAddTask').serialize();
-      post('task/add',data, "Success: New Task Added");
+      $.post('task/add', data)
+        .done(function(res){
+          if(res==1){
+            $('#current_row').val('');
+            $('#action').val('');
+            $('#txtTask').val('');
+            location.reload();
+          }
+          else{
+            alert(res);
+          }
+        })
+        .fail(function(xhr, textStatus, errorThrown){
+          alert(xhr.responseText);
+      });
     });
 
-    $('#TableTask a').click(function(){
+    $('#TableTask button').click(function(){
         var taskname = $(this).closest('tr').children('td:eq(1)').text();
         var id = $(this).closest('tr').attr('id');
         $('#action').val('edit');

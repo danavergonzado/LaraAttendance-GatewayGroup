@@ -12,16 +12,35 @@ use DB;
 class TaskController extends Controller
 {
     public function store(Request $request){
-        if($request->action == "edit"){
-            return Task::where('id', $request->current_row)->update([
-                'name' => $request->task
-            ]);
-        }else{
-            return Task::create([
-                'name' => $request->task,
-                'category' => 'general',
-                'user_id' => Auth::user()->id
-            ]);
+
+        DB::beginTransaction();
+        try {
+
+            $action = (isset($request->action)) ? $request->action : "";
+            switch($action){
+                case 'edit':
+                    $success = Task::where('id', $request->current_row)->update([
+                        'name' => $request->task
+                    ]);
+                    
+                    break;
+
+                default: 
+                    $success =  Task::create([
+                        'name' => $request->task,
+                        'category' => 'general',
+                        'user_id' => Auth::user()->id
+                    ]); 
+                    break;
+            }
+
+            if($success) DB::commit();
+            return true;
+            
+        } catch (Throwable $ex) {
+
+           DB::rollback();
+           return $ex;
         }
        
     }
