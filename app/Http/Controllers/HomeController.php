@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\TimeLog;
 use App\User;
+use App\Task;
 use Auth;
 
 class HomeController extends Controller
@@ -33,13 +34,14 @@ class HomeController extends Controller
         
         $timein = ($log[0]->timein) ? $log[0]->timein->format('h:i A') : null;             
         $timeout = ($log[0]->timeout) ? $log[0]->timeout->format('h:i A') : null;
+
+        $task = Task::where('user_id', Auth::user()->id)->get();
         
-        $data = [
+        return view('home')->with([
             'timein' => $timein,
             'timeout' => $timeout,
-        ];
-
-        return view('home')->with('data', $data);
+            'task'  =>  $task      
+        ]);
     }
 
     public function hr()

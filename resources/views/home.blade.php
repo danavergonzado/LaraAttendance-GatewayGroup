@@ -17,12 +17,12 @@
                 <p class="text-muted text-center">{{ Auth::user()->position }}</p>
                 <ul class="list-group list-group-unbordered mb-3">
                   <li class="list-group-item">Last Logged In: <span class="float-right">{{ Auth::user()->updated_at->format('m/d/Y h:i A') }}</span></li>
-                  <li class="list-group-item">Time-In: <span class="float-right"> {{ $data['timein'] }}</span></li>
-                  <li class="list-group-item">Time-Out: <span class="float-right">{{ $data['timeout'] }}</span></li>
+                  <li class="list-group-item">Time-In: <span class="float-right"> {{ $timein}}</span></li>
+                  <li class="list-group-item">Time-Out: <span class="float-right">{{ $timeout }}</span></li>
                 </ul>
-                <a href="#" class="btn {{ ($data['timein'] == null) ? 'btn-success' : 'btn-danger'}} btn-block"  
+                <a href="#" class="btn {{ ($timein == null) ? 'btn-success' : 'btn-danger'}} btn-block"  
                   data-toggle="modal" data-target="#Modal_TimeInOut" id="">
-                  <i class="fa fa-user-clock"></i> <b>{{ ($data['timein'] == null) ? 'Time-In' : 'Time-Out'}}</b>
+                  <i class="fa fa-user-clock"></i> <b>{{ ($timein == null) ? 'Time-In' : 'Time-Out'}}</b>
                 </a>
               
               </div>
@@ -42,13 +42,22 @@
                   <div class="active tab-pane" id="activity">
                     <!-- Post -->
                     <div class="post">
-                      <table class="table">
+                      <table class="table" id="TableTask">
                         <thead>
                           <th>Date</th>
                           <th>Task</th>
+                          <th>Action</th>
                         </thead>
                         <tbody>
-                         
+                        @forelse($task as $item)
+                          <tr id="{{ $item->id }}">
+                              <td>{{ $item->created_at->format('m/d/Y') }}</td>
+                              <td id="task-name">{{ $item->name }}</td>
+                              <td><a href="#" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i></a></td>
+                          </tr>
+                        @empty
+                        <tr><td colspan="3">No running task found.</td></tr>
+                        @endforelse
                         </tbody>
                       </table>
                     </div>
@@ -72,12 +81,12 @@
   <!-- MODAL
   =============================================== -->
 
-  @if($data['timeout'] == null)
+  @if($timeout == null)
   <div class="modal" tabindex="-1" role="dialog" id="Modal_TimeInOut">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{{ (!empty($data['timein']) ? 'Time-Out' : 'Time-In') }}</h5>
+        <h5 class="modal-title">{{ (!empty($timein) ? 'Time-Out' : 'Time-In') }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -113,7 +122,9 @@
       <div class="modal-body"> 
       <form method="post" id="FrmAddTask">
         <div class="form-group">
-          <input type="text" name="task" class="form-control" placeholder="Enter the task name here" /> 
+          <input type="text" name="task" id="txtTask" class="form-control" placeholder="Enter the task name here" /> 
+          <input type="hidden" name="current_row" id="current_row" value=""/>
+          <input type="hidden" name="action" id="action" value=""/>
             @csrf
         </div>
       </form>
@@ -135,7 +146,6 @@
       function(e){
         if (e.which == '13') {
           e.preventDefault();
-          $('#BtnVerifyLogin').click();
         }
     });
 
@@ -152,17 +162,30 @@
     }
 
     /* EVENTS HERE */
-    $('#BtnVerifyLogin').click(function (e) { 
+    $('#BtnVerifyLogin').on('click', function (e) { 
       e.preventDefault();
       var data = $('#FrmTimeInOut').serialize();
       post('log/timein', data, "Success: ID Verified");
     });
 
-    $('#BtnSaveTask').click(function(e){
+    $('#BtnSaveTask').on('click', function(e){
       e.preventDefault();
       var data = $('#FrmAddTask').serialize();
       post('task/add',data, "Success: New Task Added");
     });
+
+    $('#TableTask a').click(function(){
+        var taskname = $(this).closest('tr').children('td:eq(1)').text();
+        var id = $(this).closest('tr').attr('id');
+        $('#action').val('edit');
+        $('#current_row').val(id);
+        $('#txtTask').val(taskname);
+        $('#Modal_AddTask').modal('show');
+        //alert(id);
+    });
+
+
+    
 
 
 

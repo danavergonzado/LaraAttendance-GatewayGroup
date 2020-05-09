@@ -40,5 +40,9 @@ class User extends Authenticatable
         return $this->hasMany('App\TimeLog');
     }
 
+    public function task(){
+        return $this->hasMany('App\Task');
+    }
+
 
 }
