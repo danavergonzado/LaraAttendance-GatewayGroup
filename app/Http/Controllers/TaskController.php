@@ -11,6 +11,12 @@ use DB;
 
 class TaskController extends Controller
 {
+
+    public function index(){
+        $tasks = Task::where('user_id', Auth::user()->id)->get();
+        return view('task.index')->with('tasks', $tasks);
+    }
+
     public function store(Request $request){
 
         DB::beginTransaction();

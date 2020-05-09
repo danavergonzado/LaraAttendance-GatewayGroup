@@ -14,15 +14,14 @@
                        alt="User profile picture">
                 </div>
                 <h3 class="profile-username text-center">{{ Auth::user()->name }}</h3>
-                <p class="text-muted text-center">{{ Auth::user()->position }}</p>
+                <p class="text-muted text-center">{{ Auth::user()->email }}</p>
                 <ul class="list-group list-group-unbordered mb-3">
-                  <li class="list-group-item">Last Logged In: <span class="float-right">{{ Auth::user()->updated_at->format('m/d/Y h:i A') }}</span></li>
-                  <li class="list-group-item">Time-In: <span class="float-right"> {{ $timein}}</span></li>
-                  <li class="list-group-item">Time-Out: <span class="float-right">{{ $timeout }}</span></li>
+                    <li class="list-group-item">ID Number<span class="float-right text-muted">{{ Auth::user()->employee_id }}</span></li>
+                    <li class="list-group-item">Job Title<span class="float-right text-muted">{{ Auth::user()->position }}</span></li>
                 </ul>
-                <a href="#" class="btn {{ ($timein == null) ? 'btn-success' : 'btn-danger'}} btn-block"  
+                <a href="#" class="btn {{ ($log[0]->timein == null) ? 'btn-success' : 'btn-danger'}} btn-block"  
                   data-toggle="modal" data-target="#Modal_TimeInOut" id="">
-                  <i class="fa fa-user-clock"></i> <b>{{ ($timein == null) ? 'Time-In' : 'Time-Out'}}</b>
+                  <i class="fa fa-user-clock"></i> <b>{{ ($log[0]->timein == null) ? 'Time-In' : 'Time-Out'}}</b>
                 </a>
               
               </div>
@@ -35,29 +34,27 @@
           <div class="col-md-9">
             <div class="card">
               <div class="card-header p-2">
-                <h5 class="pt-1">Running Task <a href="#" class="btn btn-primary btn-sm float-right" id="BtnShowModalAddTask"role="button"><i class="fa fa-plus"></i> Add Task</a></h5>
+                <h5 class="pt-1">Time Log</h5>
               </div><!-- /.card-header -->
               <div class="card-body">
                 <div class="tab-content"  style="max-height:350px; overflow:auto">
                   <div class="active tab-pane" id="activity">
                     <!-- Post -->
                     <div class="post">
-                      <table class="table" id="TableTask">
+                      <table class="table">
                         <thead>
-                          <th>Date</th>
-                          <th>Task</th>
-                          <th>Action</th>
+                            <th>Date</th>
+                            <th>Time-In</th>
+                            <th>Time-Out</th>
                         </thead>
                         <tbody>
-                        @forelse($task as $item)
-                          <tr id="{{ $item->id }}">
-                              <td>{{ $item->created_at->format('m/d/Y') }}</td>
-                              <td id="task-name">{{ $item->name }}</td>
-                              <td><button class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i></button></td>
-                          </tr>
-                        @empty
-                        <tr><td colspan="3">No running task found.</td></tr>
-                        @endforelse
+                          @foreach($log as $time)
+                            <tr>
+                                <td>{{ $time->date }}</td>
+                                <td>{{ $timein = ($time->timein) ? $time->timein->format('h:i A'): "" }}</td>
+                                <td>{{ $timeout = ($time->timeout) ? $time->timeout->format('h:i A'): "" }} </td>
+                            </tr>
+                          @endforeach
                         </tbody>
                       </table>
                     </div>
@@ -108,34 +105,6 @@
 </div>
 @endif
 
-<!-- Add Task Modal
-  =================================== -->
-<div class="modal" tabindex="-1" role="dialog" id="Modal_AddTask">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add Task</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body"> 
-      <form method="post" id="FrmAddTask">
-        <div class="form-group">
-          <input type="text" name="task" id="txtTask" class="form-control" placeholder="Enter the task name here" /> 
-          <input type="hidden" name="current_row" id="current_row" value=""/>
-          <input type="hidden" name="action" id="action" value=""/>
-            @csrf
-        </div>
-      </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" id="BtnSaveTask"><i class="fa fa-save"></i > Save</button>
-        <button type="button" class="btn btn-secondary" id="BtnDismissModalAddTask"><i class="fa fa-times"></i > Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 @endsection
 
 @section('page-js')
@@ -167,53 +136,6 @@
           alert(xhr.responseText);
       });
     });
-
-    $('#BtnShowModalAddTask').click(function() {
-        $('#Modal_AddTask').modal('show');
-    });
-
-    $('#BtnDismissModalAddTask').click(function() {
-        $('#current_row').val('');
-        $('#action').val('');
-        $('#txtTask').val('');
-        $('#Modal_AddTask').modal('hide');
-    });
-
-    $('#BtnSaveTask').on('click', function(e){
-      e.preventDefault();
-      var data = $('#FrmAddTask').serialize();
-      $.post('task/add', data)
-        .done(function(res){
-          if(res==1){
-            $('#current_row').val('');
-            $('#action').val('');
-            $('#txtTask').val('');
-            location.reload();
-          }
-          else{
-            alert(res);
-          }
-        })
-        .fail(function(xhr, textStatus, errorThrown){
-          alert(xhr.responseText);
-      });
-    });
-
-    $('#TableTask button').click(function(){
-        var taskname = $(this).closest('tr').children('td:eq(1)').text();
-        var id = $(this).closest('tr').attr('id');
-        $('#action').val('edit');
-        $('#current_row').val(id);
-        $('#txtTask').val(taskname);
-        $('#Modal_AddTask').modal('show');
-        //alert(id);
-    });
-
-
-    
-
-
-
 
   });
 </script>

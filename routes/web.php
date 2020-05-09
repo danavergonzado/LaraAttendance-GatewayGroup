@@ -20,6 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 Route::get('/home', 'HomeController@index');
 
+Route::get('/task', 'TaskController@index');
 Route::post('/task/add', "TaskController@store");
 
 Route::get('/user/register', 'UserController@index');

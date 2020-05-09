@@ -18,7 +18,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
-<body class="hold-transition sidebar-mini sidebar-close sidebar-collapse" style="height:auto">
+<body class="sidebar-collapse sidebar-mini" style="height:auto">
 <div class="wrapper">
 
   <!-- Navbar -->

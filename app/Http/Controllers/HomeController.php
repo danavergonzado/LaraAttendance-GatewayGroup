@@ -31,17 +31,8 @@ class HomeController extends Controller
             'user_id'   =>  Auth::user()->id,
             'date'  =>  date('Y-m-d')
             ])->get();
-        
-        $timein = ($log[0]->timein) ? $log[0]->timein->format('h:i A') : null;             
-        $timeout = ($log[0]->timeout) ? $log[0]->timeout->format('h:i A') : null;
 
-        $task = Task::where('user_id', Auth::user()->id)->get();
-        
-        return view('home')->with([
-            'timein' => $timein,
-            'timeout' => $timeout,
-            'task'  =>  $task      
-        ]);
+        return view('home')->with('log', $log);
     }
 
     public function hr()

@@ -14,18 +14,22 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!--<li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                Simple Link
-                <span class="right badge badge-danger">New</span>
-              </p>
+          <li class="nav-item">
+            <a href="{{ url('home') }}" class="nav-link">
+              <i class="nav-icon fas fa-user"></i>
+              <p>Account</p>
             </a>
-          </li> -->
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ url('task') }}" class="nav-link">
+              <i class="nav-icon fas fa-tasks"></i>
+              <p>Task</p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
-    </div> -->
+    </div>
     <!-- /.sidebar -->
   </aside>
